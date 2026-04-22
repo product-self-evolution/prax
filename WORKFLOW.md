@@ -1,12 +1,12 @@
-# Prax Workflow - Rora 开发与 GitHub 发布流程
+# Prax Workflow - 独立开发与 GitHub 发布流程
 
 ## 1. 目标
 
-你要求的工作模式是：
+Prax 的工作模式是：
 
-1. `Prax` 作为一个**独立项目**保留可发布版本  
-2. 后续所有日常修改都在 `Rora` 仓库内的 `01-Projects/06-Prax` 完成  
-3. 只有“确认版本”时，才同步到 GitHub 独立仓库
+1. `Prax` 作为一个**独立项目**持续维护  
+2. 日常修改在 Prax 项目根目录内完成  
+3. 只有“确认版本”时，才发布到 GitHub 远端仓库
 
 这个流程的核心是：**开发与发布解耦**。
 
@@ -14,14 +14,14 @@
 
 ## 2. 目录约定
 
-- 日常开发目录：`01-Projects/06-Prax/`
-- 版本快照目录：`01-Projects/06-Prax/releases/<version>/`
-- 自动化脚本目录：`01-Projects/06-Prax/scripts/`
+- 日常开发目录：`<prax-root>/`
+- 版本快照目录：`<prax-root>/releases/<version>/`
+- 自动化脚本目录：`<prax-root>/scripts/`
 
 示例：
 
 ```text
-01-Projects/06-Prax/
+<prax-root>/
   README.md
   WORKFLOW.md
   docs/
@@ -37,28 +37,28 @@
 
 ## 3. 标准发布 SOP（Standard Operating Procedure）
 
-### Step 1 - 在 Rora 中迭代
+### Step 1 - 在 Prax 中迭代
 
-你和 AI 在 `01-Projects/06-Prax` 下持续修改，不直接推 GitHub 独立仓库。
+你和 AI 在 Prax 项目根目录持续修改，不直接推远端仓库。
 
 ### Step 2 - 冻结版本（Release Snapshot）
 
 当你确认一个版本可发布时，执行：
 
 ```bash
-bash "01-Projects/06-Prax/scripts/release-prax.sh" v0.1.0
+bash "scripts/release-prax.sh" v0.1.0
 ```
 
 这会把当前 Prax 目录（排除 `releases/`）快照到：
 
-`01-Projects/06-Prax/releases/v0.1.0/`
+`releases/v0.1.0/`
 
 ### Step 3 - 同步到独立仓库
 
 执行同步脚本（先同步文件，不自动推送）：
 
 ```bash
-bash "01-Projects/06-Prax/scripts/sync-prax-to-github.sh" \
+bash "scripts/sync-prax-to-github.sh" \
   --version v0.1.0 \
   --target "$HOME/Projects/prax"
 ```
@@ -66,7 +66,7 @@ bash "01-Projects/06-Prax/scripts/sync-prax-to-github.sh" \
 如果你确认无误，再加 `--push`：
 
 ```bash
-bash "01-Projects/06-Prax/scripts/sync-prax-to-github.sh" \
+bash "scripts/sync-prax-to-github.sh" \
   --version v0.1.0 \
   --target "$HOME/Projects/prax" \
   --push
@@ -78,7 +78,7 @@ bash "01-Projects/06-Prax/scripts/sync-prax-to-github.sh" \
 
 ## 4. 分支与版本策略建议
 
-- Rora 内开发：不强制 tag（你的主知识仓）
+- 本地开发：不强制 tag
 - Prax 独立仓库：使用语义化版本（SemVer, Semantic Versioning）
   - `v0.x.y`：早期快速迭代
   - `v1.0.0`：稳定公开版本
@@ -98,7 +98,7 @@ bash "01-Projects/06-Prax/scripts/sync-prax-to-github.sh" \
 1. `README.md` 是否可直接被外部用户理解
 2. `docs/vision.md` 与 `docs/roadmap.md` 是否一致
 3. 每个模块是否可按文档跑通
-4. 是否误带 Rora 私有内容（路径、个人隐私、非 Prax 资产）
+4. 是否误带本地私有内容（绝对路径、个人隐私、非 Prax 资产）
 5. License 是否已明确（MIT 或 CC BY-NC-SA 4.0）
 
 ---
@@ -110,10 +110,10 @@ bash "01-Projects/06-Prax/scripts/sync-prax-to-github.sh" \
 - 原因：目标目录或 `origin` 误配置
 - 防护：`sync-prax-to-github.sh` 默认不推送；只有显式加 `--push` 才执行
 
-### 风险 2：把 Rora 非 Prax 内容同步出去
+### 风险 2：把非 Prax 内容同步出去
 
 - 原因：手工复制路径时范围过大
-- 防护：只从 `01-Projects/06-Prax` 或 `releases/<version>` 同步
+- 防护：只从 `<prax-root>` 或 `releases/<version>` 同步
 
 ### 风险 3：版本不可复现
 
