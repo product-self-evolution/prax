@@ -27,11 +27,11 @@ flowchart LR
 
 ### 2.3 首发模块建议
 
-- `01-ai-digest`：AI 周报聚合与摘要生成
-- `02-content-repurpose`：单篇内容多平台改写
+- `ai-digest`：AI 周报聚合与摘要生成
+- `content-repurpose`：单篇内容多平台改写
 - `03-competitor-bot`：竞品追踪与摘要机器人
 - `04-local-rag`：本地知识问答 (Retrieval-Augmented Generation, 检索增强生成)
-- `05-workflow-starter`：个人工作流编排起步模板
+- `workflow-starter`：个人工作流编排起步模板
 
 ### 2.4 验证指标
 

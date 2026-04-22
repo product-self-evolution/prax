@@ -73,23 +73,30 @@ Focus only on the Learn layer first.
 - Fork-and-customize flow
 - Community index and discovery
 
-## Repository Structure (draft)
+## Repository Structure
 
 ```text
 prax/
   README.md
+  LICENSE
+  CONTRIBUTING.md
+  CODE_OF_CONDUCT.md
+  .github/
+    ISSUE_TEMPLATE/
+    pull_request_template.md
   docs/
     vision.md
     roadmap.md
   modules/
-    01-ai-digest/
-    02-content-repurpose/
-    03-competitor-bot/
-  templates/
+    ai-digest/
+    content-repurpose/
     workflow-starter/
-    profile-page-starter/
-  examples/
-    published-workflows/
+    README.md
+  templates/
+    module-template.md
+  scripts/
+    release-prax.sh
+    sync-prax-to-github.sh
 ```
 
 ## Design Principles
@@ -111,7 +118,9 @@ prax/
 
 - Naming finalized: `Prax - Your Solo AI Forge`
 - Problem statement drafted: `00-Problem-Statement.md`
-- MVP definition in progress
+- Vision and roadmap drafted (`docs/vision.md`, `docs/roadmap.md`)
+- `v0.1.0` published to GitHub
+- Phase 1 module skeleton initialized
 
 ## Contributing
 
@@ -124,4 +133,4 @@ At this stage, contributions are welcome in:
 
 ## License
 
-TBD (MIT or CC BY-NC-SA 4.0 to be finalized after distribution strategy decision).
+MIT License.

@@ -2,10 +2,10 @@
 set -euo pipefail
 
 # -----------------------------------------------------------------------------
-# Prax sync script: Rora -> standalone -> optional GitHub push
+# Prax sync script: release snapshot -> standalone -> optional GitHub push
 #
 # 目的：
-# - 把 Rora 里的 Prax（或某个 release 快照）同步到独立仓库目录
+# - 把 Prax 的某个 release 快照同步到独立仓库目录
 # - 默认只同步文件，不自动 push，降低误操作风险
 #
 # 风险控制策略：
@@ -96,7 +96,7 @@ if [[ "$PUSH" == "true" ]]; then
       exit 0
     fi
 
-    git commit -m "release: $VERSION from Rora snapshot"
+    git commit -m "release: $VERSION snapshot"
 
     # 仅当显式 --push 时执行推送
     git push
