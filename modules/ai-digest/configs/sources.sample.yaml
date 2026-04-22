@@ -1,0 +1,63 @@
+# Prax / ai-digest / Sources Configuration (Sample)
+#
+# 这个文件定义你希望 Agent 监听的信息源。
+# 首次使用时：复制本文件为 sources.yaml 并替换为你关注的源。
+#
+# 支持的 source 类型（MVP 阶段）：
+#   - type: rss         (公开 RSS feed)
+#
+# Phase 2 规划扩展：
+#   - type: website     (定时抓取指定网页)
+#   - type: email       (订阅邮件 newsletter)
+#   - type: webhook     (外部系统主动推送)
+
+version: 1
+
+# 全局设置
+settings:
+  language: zh-CN            # 输出 digest 的语言（zh-CN / en-US）
+  max_items_per_source: 10   # 每个源最多采集几条
+  lookback_hours: 24         # 回溯时间窗（与 schedule 联动：日报 24h，周报 168h）
+
+# 信息源列表
+sources:
+  - id: hackernews
+    type: rss
+    name: Hacker News Front Page
+    url: https://hnrss.org/frontpage
+    tags: [tech, startup, dev]
+    priority: high
+
+  - id: anthropic-news
+    type: rss
+    name: Anthropic News
+    url: https://www.anthropic.com/news/rss
+    tags: [ai, models]
+    priority: high
+
+  - id: openai-blog
+    type: rss
+    name: OpenAI Blog
+    url: https://openai.com/blog/rss.xml
+    tags: [ai, models]
+    priority: high
+
+  - id: github-trending-python
+    type: rss
+    name: GitHub Trending - Python (daily)
+    url: https://mshibanami.github.io/GitHubTrendingRSS/daily/python.xml
+    tags: [code, python, trending]
+    priority: medium
+
+  - id: product-hunt
+    type: rss
+    name: Product Hunt Today
+    url: https://www.producthunt.com/feed
+    tags: [product, tools]
+    priority: medium
+
+# 过滤规则（交给 LLM 节点参考，不是硬过滤）
+filters:
+  must_contain_any: []                         # 关键词白名单（空 = 不过滤）
+  must_not_contain: [crypto, nft, meme]        # 关键词黑名单
+  min_score: 6                                 # LLM 评分阈值（0-10），低于此分不入 digest

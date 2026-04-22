@@ -1,0 +1,68 @@
+# Prax / workflow-starter / Workflow Configuration (Sample)
+#
+# workflow-starter 不是某个具体业务场景，而是一个"通用 Agent 模板骨架"。
+# 它提供标准的"输入 → 处理 → 输出"三段式结构，让你 fork 后快速改造成自己的场景。
+#
+# 当你需要构建一个新 Agent 时：
+#   1. fork 这个模块到 modules/<your-scenario>/
+#   2. 改 workflow.yaml 定义你的业务语义
+#   3. 改 prompts/ 定义你的 LLM 行为
+#   4. 改 workflow/<your>.dify.yaml 定义你的 Dify 工作流
+
+version: 1
+
+# Agent 元信息
+agent:
+  id: my-agent                   # 你的 Agent 唯一标识（kebab-case）
+  name: My First Agent           # 显示名称
+  description: "一句话描述这个 Agent 解决什么业务问题"
+  owner: your-name
+  version: 0.1.0
+
+# 输入定义（工作流接收什么）
+input:
+  type: on_demand                # on_demand | scheduled | webhook
+  # 如果 type: scheduled
+  # schedule:
+  #   cron: "0 9 * * *"
+  #   timezone: Asia/Shanghai
+  # 如果 type: webhook
+  # webhook:
+  #   auth: bearer_token_env     # 从环境变量读 token
+  #   endpoint: /trigger
+
+  fields:
+    - name: query
+      type: text
+      required: true
+      description: 用户输入的核心内容
+    - name: context
+      type: paragraph
+      required: false
+      description: 可选的补充上下文
+
+# 处理链（Agent 内部节点，可增删）
+pipeline:
+  - id: validate
+    type: code
+    description: 输入校验与清洗
+  - id: reason
+    type: llm
+    prompt_ref: prompts/main.prompt.md
+    description: 主推理节点
+  - id: postprocess
+    type: code
+    description: 输出后处理（格式化/校验/裁剪）
+
+# 输出定义（工作流产出什么）
+output:
+  type: structured               # structured | markdown | plaintext
+  schema:
+    - name: result
+      type: text
+    - name: metadata
+      type: object
+
+# 推送渠道（可选）
+delivery:
+  channels: []                   # 按需添加，参考 ai-digest / content-repurpose 的 delivery 配置

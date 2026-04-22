@@ -1,0 +1,109 @@
+# ============================================================================
+# Prax / ai-digest - Dify Workflow (MVP Skeleton)
+# ============================================================================
+#
+# 状态: SKELETON（结构骨架，含完整节点规划，需要在 Dify 画布上连线验证后导出最终版）
+# 用途: 作为 Phase 1 Deploy MVP 的参考实现。Maintainer 在 Dify 上搭建完成并
+#       跑通后，用 Dify 的 "Export DSL" 功能导出替换本文件内容。
+#
+# 为什么先给骨架而非完整 YAML：
+#   Dify 的 workflow DSL 与 Dify 版本强耦合，直接手写可能因版本差异导入失败。
+#   推荐做法：Maintainer 按本骨架在 Dify UI 中搭建，导出 DSL 作为正式模板。
+# ============================================================================
+
+app:
+  name: Prax - AI Digest Agent
+  description: Aggregate multiple RSS sources, score and summarize items with LLM, deliver digest via email.
+  mode: workflow
+  icon: 🔔
+  icon_background: '#FFEAD5'
+
+kind: app
+version: 0.1.0
+
+workflow:
+  # --------------------------------------------------------------------------
+  # 环境变量（在 Dify 上配置，不在文件中明文写入）
+  # --------------------------------------------------------------------------
+  environment_variables:
+    - name: PRAX_SMTP_HOST
+    - name: PRAX_SMTP_PORT
+    - name: PRAX_SMTP_USER
+    - name: PRAX_SMTP_PASSWORD
+    - name: PRAX_EMAIL_FROM
+    - name: PRAX_EMAIL_TO
+
+  # --------------------------------------------------------------------------
+  # 节点规划（按职责拆分，6 个核心节点）
+  # --------------------------------------------------------------------------
+  nodes:
+    # 1. 触发节点：定时器（Phase 1 MVP：每日 09:00 本地时区）
+    - id: node_trigger
+      type: start
+      title: Scheduled Start
+      notes: 由 Dify 外部 cron 或 Dify 自带 schedule 触发
+
+    # 2. 采集节点：遍历 sources.yaml 调用 HTTP Request 拉取 RSS
+    - id: node_fetch_rss
+      type: http_request
+      title: Fetch RSS Feeds
+      method: GET
+      notes: 对 sources.yaml 中每个 RSS URL 发起请求；建议配合 loop 节点遍历
+
+    # 3. 解析节点：把 RSS XML 转成结构化 items[]
+    - id: node_parse_rss
+      type: code
+      language: python3
+      title: Parse RSS to Items
+      notes: 输出格式 { items: [{title, summary, url, source, published_at}] }
+
+    # 4. 评分节点：对每条 item 调用 LLM 打分（使用 prompts/scorer.prompt.md）
+    - id: node_score
+      type: llm
+      title: Score Item Value
+      notes: 批处理评分，输出 { score, reason } per item
+
+    # 5. 过滤节点：仅保留 score >= min_score 的 items
+    - id: node_filter
+      type: code
+      language: python3
+      title: Filter by Score Threshold
+      notes: 使用 sources.yaml 的 filters.min_score 作为阈值
+
+    # 6. 摘要节点：把通过的 items 交给 LLM 生成 digest markdown
+    - id: node_summarize
+      type: llm
+      title: Generate Digest
+      notes: 使用 prompts/summarizer.prompt.md 作为 System Prompt
+
+    # 7. 推送节点：按 delivery.yaml 发送到邮箱
+    - id: node_deliver_email
+      type: http_request
+      title: Deliver via Email (SMTP)
+      notes: 通过 HTTP Request 调用 SMTP Gateway 或使用 Dify 自定义工具
+
+  # --------------------------------------------------------------------------
+  # 连线关系
+  # --------------------------------------------------------------------------
+  edges:
+    - from: node_trigger
+      to: node_fetch_rss
+    - from: node_fetch_rss
+      to: node_parse_rss
+    - from: node_parse_rss
+      to: node_score
+    - from: node_score
+      to: node_filter
+    - from: node_filter
+      to: node_summarize
+    - from: node_summarize
+      to: node_deliver_email
+
+# ============================================================================
+# TODO（Phase 1 收尾清单）
+# ============================================================================
+# [ ] 在 Dify UI 中按本骨架搭建 workflow
+# [ ] 用真实 RSS 源测试端到端跑通
+# [ ] 用 Dify Export DSL 导出完整版 YAML 替换本文件
+# [ ] 在 docs/deployment.md 中补充导入步骤截图
+# ============================================================================

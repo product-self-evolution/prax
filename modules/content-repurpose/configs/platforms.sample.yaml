@@ -1,0 +1,77 @@
+# Prax / content-repurpose / Platforms Configuration (Sample)
+#
+# 这个文件定义 Agent 需要把一篇源内容改写成哪些平台格式。
+# 首次使用时：复制本文件为 platforms.yaml，只保留你真正需要的平台。
+#
+# 每个平台独立启用，互不依赖。MVP 阶段所有平台通过同一个 workflow 批处理。
+
+version: 1
+
+# 全局设置
+settings:
+  source_language: zh-CN           # 源内容语言
+  output_language: zh-CN           # 输出语言（可与源不同，用于翻译场景）
+  keep_original_link: true         # 是否在输出中保留原文链接
+  author_signature: "— by Prax"    # 文末署名（空字符串则不追加）
+
+# 要生成的平台列表
+platforms:
+  - id: xiaohongshu
+    name: 小红书 (Xiaohongshu / RED)
+    enabled: true
+    constraints:
+      max_chars: 1000              # 平台内容长度上限
+      min_chars: 400
+      title_max_chars: 20
+      emoji_level: high            # none | low | medium | high
+      hashtag_count: [3, 8]        # 最少-最多个 topic tag
+      tone: "friendly, trend-aware, visual-first"
+      format: markdown
+    ai_hints:
+      - 开头用钩子句抓眼球（数字/反常识/利益点）
+      - 使用 emoji 分段，避免长段落
+      - 结尾引导评论或收藏
+
+  - id: wechat-article
+    name: 微信公众号文章
+    enabled: true
+    constraints:
+      max_chars: 3000
+      min_chars: 1200
+      title_max_chars: 25
+      subtitle_required: true
+      tone: "professional, structured, insightful"
+      format: markdown
+    ai_hints:
+      - 严谨、有信息密度，适合深度阅读
+      - 二级标题清晰，便于滑屏浏览
+      - 开头 100 字内给出全文要点
+
+  - id: video-script
+    name: 口播视频脚本 (3-5 min)
+    enabled: true
+    constraints:
+      target_duration_seconds: 240
+      tone: "conversational, energetic"
+      format: markdown
+    structure:
+      - hook (0-10s)
+      - problem (10-40s)
+      - solution (40-180s)
+      - action (180-240s)
+    ai_hints:
+      - 口语化，避免书面长句
+      - 每段标注时间戳
+      - 用"你"与观众直接对话
+
+  - id: linkedin-post
+    name: LinkedIn Long Post (EN)
+    enabled: false                  # 默认关闭，需要时启用
+    constraints:
+      max_chars: 1800
+      tone: "professional, thought-leadership"
+      format: plaintext
+    ai_hints:
+      - Lead with a bold statement or insight
+      - Use line breaks liberally for readability
+      - End with a question to drive engagement

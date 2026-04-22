@@ -1,0 +1,46 @@
+# Prax / content-repurpose / Delivery Configuration (Sample)
+#
+# MVP 策略：内容改写类 Agent 需要"人在回路"（Human-in-the-Loop）审校，
+# 所以默认不直接发布到平台，而是：
+#   1. 把各平台草稿写入 output/ 目录（供人工预览与编辑）
+#   2. 可选发送一封通知邮件，告知草稿已生成
+#
+# Phase 2 将扩展：
+#   - 直接发布到小红书 / 公众号（通过平台 API 或 Webhook）
+#   - 接入内容审批工作流
+
+version: 1
+
+# 触发方式（MVP 支持两种）
+trigger:
+  mode: on_demand                  # on_demand | scheduled
+  # 如果 mode: scheduled，填写以下字段
+  # schedule_cron: "0 10 * * *"
+  # timezone: Asia/Shanghai
+
+# 输出位置
+output:
+  directory: ./output/drafts       # 输出草稿目录（相对 module 根）
+  filename_template: "{platform}-{date}-{slug}.md"
+  overwrite: false                 # 同名文件是否覆盖（false 会自动加后缀）
+
+# 通知渠道（可选，只在草稿生成后发通知，不含内容本身）
+notifications:
+  - id: email-notify
+    type: email
+    enabled: false                 # 默认关闭；真实使用时改为 true
+    smtp:
+      host: smtp.example.com
+      port: 587
+      username: your-email@example.com
+      password_env: PRAX_SMTP_PASSWORD
+      use_tls: true
+    from: "Prax Content <content@example.com>"
+    to: [you@example.com]
+    subject_template: "📝 {count} 份内容草稿已生成 - {date}"
+
+  - id: feishu-notify
+    type: feishu
+    enabled: false
+    webhook_url_env: PRAX_FEISHU_WEBHOOK
+    message_template: "✍️ 新的多平台草稿已就绪：{platforms_summary}"

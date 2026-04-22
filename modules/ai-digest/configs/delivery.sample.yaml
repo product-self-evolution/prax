@@ -1,0 +1,45 @@
+# Prax / ai-digest / Delivery Configuration (Sample)
+#
+# 这个文件定义 Agent 生成 digest 后推送到哪里。
+# 首次使用时：复制本文件为 delivery.yaml 并填入你的真实凭据。
+#
+# 注意：不要把真实凭据提交到公开仓库。建议把 delivery.yaml 加入 .gitignore。
+#
+# MVP 阶段只支持 email；Phase 2 将扩展到 Slack / 飞书 / 企业微信 / GitHub Release。
+
+version: 1
+
+# 调度策略
+schedule:
+  mode: daily          # daily | weekly
+  time: "09:00"        # 本地时区的触发时间（24h 制）
+  timezone: Asia/Shanghai
+
+# 推送渠道
+channels:
+  # 邮件推送（MVP 默认渠道）
+  - id: email-primary
+    type: email
+    enabled: true
+    smtp:
+      host: smtp.example.com
+      port: 587
+      username: your-email@example.com
+      # 生产环境建议使用环境变量或 Dify 密钥管理，而非明文
+      password_env: PRAX_SMTP_PASSWORD
+      use_tls: true
+    from: "Prax Digest <digest@example.com>"
+    to:
+      - you@example.com
+    subject_template: "AI Digest {{ date }}"
+
+  # Phase 2 预留渠道（默认关闭）
+  - id: slack-team
+    type: slack
+    enabled: false
+    webhook_url_env: PRAX_SLACK_WEBHOOK
+
+  - id: feishu-group
+    type: feishu
+    enabled: false
+    webhook_url_env: PRAX_FEISHU_WEBHOOK

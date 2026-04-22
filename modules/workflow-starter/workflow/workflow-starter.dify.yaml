@@ -1,0 +1,105 @@
+# ============================================================================
+# Prax / workflow-starter - Dify Workflow (Universal Starter Skeleton)
+# ============================================================================
+#
+# 状态: SKELETON - 可直接作为新 Agent 的起点
+# 用途: 当你想在 Dify 上构建一个新 Agent 但不知从何开始时，从这个骨架派生。
+#
+# 三段式结构：
+#   Input → Pipeline(Validate / Reason / Postprocess) → Output
+#
+# 为什么要这个模板：
+#   - 避免每个新 Agent 都从空白画布开始
+#   - 强制"节点职责分离"（validate / reason / postprocess）
+#   - 易于后续插入新节点（scoring, filtering, retrieval 等）
+# ============================================================================
+
+app:
+  name: Prax - Workflow Starter
+  description: A universal Dify workflow skeleton for building new Agents quickly.
+  mode: workflow
+  icon: 🧱
+  icon_background: '#F0F0F0'
+
+kind: app
+version: 0.1.0
+
+workflow:
+  environment_variables: []
+
+  nodes:
+    # 1. 起点
+    - id: node_start
+      type: start
+      title: Start
+      inputs:
+        - name: query
+          type: text
+          required: true
+        - name: context
+          type: paragraph
+          required: false
+
+    # 2. 输入校验（避免垃圾数据进入下游 LLM）
+    - id: node_validate
+      type: code
+      language: python3
+      title: Validate Input
+      notes: |
+        - 校验必填字段
+        - 清洗特殊字符
+        - 限制最大长度
+        - 输出 { valid: bool, cleaned_query: str, reason?: str }
+
+    # 3. 推理节点（Agent 的核心 LLM 调用）
+    - id: node_reason
+      type: llm
+      title: Main Reasoning
+      notes: |
+        - System Prompt 指向 prompts/main.prompt.md
+        - 输入: { cleaned_query, context }
+        - 输出: raw response（自由文本或结构化 JSON）
+
+    # 4. 输出后处理
+    - id: node_postprocess
+      type: code
+      language: python3
+      title: Postprocess Output
+      notes: |
+        - 把 LLM 输出结构化（如解析 JSON）
+        - 长度裁剪
+        - 合规/敏感词过滤
+        - 输出 { result, metadata: { tokens, latency_ms, model } }
+
+    # 5. 输出
+    - id: node_end
+      type: end
+      title: End
+      outputs:
+        - name: result
+          type: text
+        - name: metadata
+          type: object
+
+  edges:
+    - from: node_start
+      to: node_validate
+    - from: node_validate
+      to: node_reason
+    - from: node_reason
+      to: node_postprocess
+    - from: node_postprocess
+      to: node_end
+
+# ============================================================================
+# 如何从这个骨架派生一个新 Agent：
+#
+# 1. 复制整个 modules/workflow-starter/ 为 modules/<your-agent-name>/
+# 2. 修改 configs/workflow.yaml 的 agent 元信息
+# 3. 在 prompts/ 下创建你的业务 prompt
+# 4. 在本文件中：
+#    - 重命名 app.name
+#    - 按需增加节点（如 retrieval / scoring / iteration）
+#    - 保持"三段式"结构（validate / reason / postprocess）
+# 5. 在 README.md 中描述业务场景
+# ============================================================================

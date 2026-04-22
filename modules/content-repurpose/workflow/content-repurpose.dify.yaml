@@ -1,0 +1,98 @@
+# ============================================================================
+# Prax / content-repurpose - Dify Workflow (MVP Skeleton)
+# ============================================================================
+#
+# 状态: SKELETON（结构骨架，待 Dify UI 搭建后导出完整版）
+# 用途: Phase 1 Deploy MVP 参考实现。一篇源内容 → 并行改写为多平台草稿。
+# ============================================================================
+
+app:
+  name: Prax - Content Repurpose Agent
+  description: Turn one source article into platform-ready drafts (Xiaohongshu, WeChat, Video Script, LinkedIn).
+  mode: workflow
+  icon: ✍️
+  icon_background: '#E8F4FD'
+
+kind: app
+version: 0.1.0
+
+workflow:
+  environment_variables:
+    - name: PRAX_SMTP_HOST
+    - name: PRAX_SMTP_PASSWORD
+    - name: PRAX_FEISHU_WEBHOOK
+
+  nodes:
+    # 1. 触发节点：手动触发 + 输入源内容
+    - id: node_start
+      type: start
+      title: Start
+      inputs:
+        - name: source_content
+          type: paragraph
+          required: true
+          description: 源内容（Markdown 格式）
+        - name: source_title
+          type: text
+          required: false
+          description: 可选，自定义标题（否则 AI 从正文提取）
+
+    # 2. 配置加载节点：读取 platforms.yaml 并筛选 enabled 的平台
+    - id: node_load_config
+      type: code
+      language: python3
+      title: Load Platforms Config
+      notes: 读取 configs/platforms.yaml；输出 { enabled_platforms: [...] }
+
+    # 3. 循环节点：对每个启用的平台调用 Rewriter
+    - id: node_iterate_platforms
+      type: iteration
+      title: Iterate Enabled Platforms
+      iteration_input: enabled_platforms
+
+    # 4. 改写节点（在循环内）：使用 prompts/rewriter.prompt.md
+    - id: node_rewrite
+      type: llm
+      title: Rewrite for Platform
+      notes: 并行执行；输入 { source, platform, settings }
+
+    # 5. 汇总节点：把所有平台草稿收集为数组
+    - id: node_collect_drafts
+      type: variable_aggregator
+      title: Collect Drafts
+
+    # 6. 输出节点：写入 output/drafts/ 目录（通过 HTTP 或 Code 节点）
+    - id: node_save_drafts
+      type: code
+      language: python3
+      title: Save Drafts to Filesystem
+      notes: 生成文件名格式 {platform}-{date}-{slug}.md
+
+    # 7. 通知节点（可选）：发送通知（不含草稿内容本身）
+    - id: node_notify
+      type: http_request
+      title: Send Notification
+      notes: 只在 delivery.yaml 有 enabled 的通知渠道时触发
+
+  edges:
+    - from: node_start
+      to: node_load_config
+    - from: node_load_config
+      to: node_iterate_platforms
+    - from: node_iterate_platforms
+      to: node_rewrite
+    - from: node_rewrite
+      to: node_collect_drafts
+    - from: node_collect_drafts
+      to: node_save_drafts
+    - from: node_save_drafts
+      to: node_notify
+
+# ============================================================================
+# TODO（Phase 1 收尾清单）
+# ============================================================================
+# [ ] 在 Dify UI 中按本骨架搭建 workflow
+# [ ] 用一篇真实源内容测试端到端跑通（至少 3 个平台）
+# [ ] 用 Dify Export DSL 导出完整 YAML 替换本文件
+# [ ] 为 output/ 目录生成样本草稿
+# ============================================================================
