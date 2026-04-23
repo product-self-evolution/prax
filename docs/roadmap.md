@@ -128,14 +128,15 @@ flowchart LR
 
 ### 5.1 文档体系
 
-| 文档 | 用途 |
-|---|---|
-| `README.md` | 对外叙事、一句话定位、快速入口 |
-| `docs/vision.md` | 战略方向与边界 |
-| `docs/roadmap.md` | 执行计划与里程碑 |
-| `docs/testing/first-run-checklist.md` | 用户测试脚本（Phase 1 完成前建立） |
-| `docs/governance/module-quality-checklist.md` | 模板质量门槛（Phase 1 完成前建立） |
-| `CONTRIBUTING.md` | 贡献流程规范（Phase 2 完善） |
+| 文档 | 用途 | 状态 |
+|---|---|---|
+| `README.md` | 对外叙事、一句话定位、快速入口 | ✅ 已完成 |
+| `docs/vision.md` | 战略方向与边界 | ✅ 已完成 |
+| `docs/roadmap.md` | 执行计划与里程碑 | ✅ 已完成 |
+| `docs/agentic-platform-architecture-playbook.md` | Agentic 平台架构参考白皮书 | ✅ v0.5.0 已发布 |
+| `docs/testing/first-run-checklist.md` | 用户测试脚本 | ✅ v0.5.1 已发布 |
+| `docs/governance/module-quality-checklist.md` | 模板质量门槛 | ✅ v0.5.1 已发布 |
+| `CONTRIBUTING.md` | 贡献流程规范（接入 quality checklist） | ✅ v0.5.1 已完善 |
 
 ### 5.2 数据观测
 

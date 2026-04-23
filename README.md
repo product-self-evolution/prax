@@ -63,13 +63,26 @@ cat docs/deployment.md
 
 详细步骤看每个模块自己的 README。
 
-## Phase 1 Modules (v0.4.0)
+## Phase 1 Modules (v0.4.0+)
 
 | 模块 | 业务场景 | 目标岗位 | 状态 |
 |---|---|---|---|
 | [`ai-digest`](modules/ai-digest/) | RSS 聚合 + AI 筛选摘要 + 邮件推送 | 情报岗 / PM / 行业分析 | MVP Skeleton |
 | [`content-repurpose`](modules/content-repurpose/) | 单篇内容 → 多平台草稿（小红书/公众号/视频脚本） | 内容运营 / 独立创作者 | MVP Skeleton |
 | [`workflow-starter`](modules/workflow-starter/) | 通用 Agent 骨架，供派生新模板 | 所有贡献者 | Stable |
+
+## For Different Audiences
+
+不同身份的读者，推荐以下入口：
+
+| 你的身份 | 先读这个 |
+|---|---|
+| 🔍 **我是来看看 Prax 是什么** | 继续读本 README，看 [`docs/vision.md`](docs/vision.md) |
+| 🧪 **我是来做首次部署测试的** | [`docs/testing/first-run-checklist.md`](docs/testing/first-run-checklist.md) |
+| 🛠️ **我是来部署某个 Agent 到我公司** | 任一模板下的 `docs/deployment.md` |
+| 📐 **我想贡献一个新模板** | [`CONTRIBUTING.md`](CONTRIBUTING.md) + [`docs/governance/module-quality-checklist.md`](docs/governance/module-quality-checklist.md) |
+| 🏗️ **我想理解 Agentic 平台架构** | [`docs/agentic-platform-architecture-playbook.md`](docs/agentic-platform-architecture-playbook.md) |
+| 🗺️ **我想看产品路线图** | [`docs/roadmap.md`](docs/roadmap.md) |
 
 ## Product Vision: The Next.js Starter of Enterprise Agents
 
